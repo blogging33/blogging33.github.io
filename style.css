@@ -87,111 +87,6 @@ input[type=text]{padding:10px;border-radius:8px;border:1px solid rgba(11,102,255
   .viewer{min-height:50vh}
 }
 
-/* dodatkowa poprawa responsywności dla telefonów */
-@media (max-width: 600px) {
-  body {
-    padding: 16px;
-  }
-
-  header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .controls {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .controls .btn {
-    width: 100%;
-    justify-content: center;
-    font-size: 16px;
-    padding: 12px;
-  }
-
-  .search input {
-    width: 100%;
-    font-size: 16px;
-    padding: 10px;
-  }
-
-  .sidebar {
-    max-height: none;
-    padding: 12px;
-  }
-
-  .post-item {
-    padding: 10px;
-  }
-
-  .viewer {
-    min-height: auto;
-    padding: 14px;
-  }
-
-  .viewer-inner {
-    padding: 0;
-  }
-
-  /* Wpis i komentarze w pełnej wysokości */
-  .content-scroll {
-    max-height: none !important;
-    overflow: visible !important;
-    padding-right: 0;
-  }
-
-  .comments {
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px dashed rgba(11,102,255,0.1);
-  }
-
-  .comment {
-    font-size: 14px;
-    word-wrap: break-word;
-  }
-
-  input, textarea, button {
-    font-size: 16px;
-  }
-
-  footer {
-    flex-direction: column;
-    gap: 8px;
-    text-align: center;
-  }
-
-  .socials {
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .socials a {
-    justify-content: center;
-    width: 100%;
-  }
-}
-
-/* bardzo małe ekrany */
-@media (max-width: 400px) {
-  h1 {
-    font-size: 1.4rem;
-  }
-
-  p.lead {
-    font-size: 0.9rem;
-  }
-
-  .controls .btn {
-    font-size: 14px;
-    padding: 10px;
-  }
-}
-
 /* load-in slide animation */
 .slide-in{opacity:0;transform:translateY(28px);animation:slideIn .7s forwards;}
 .slide-in.delay-1{animation-delay:.06s}
@@ -205,3 +100,27 @@ input[type=text]{padding:10px;border-radius:8px;border:1px solid rgba(11,102,255
 
 /* little polish */
 .muted{color:var(--muted)}
+
+/* responsywność wpisu i komentarzy na telefonie */
+@media (max-width: 600px) {
+  .viewer {
+    min-height: auto !important;
+    height: auto !important;
+  }
+
+  .viewer-inner {
+    height: auto !important;
+  }
+
+  .content-scroll {
+    max-height: none !important;
+    overflow: visible !important;
+    padding-right: 0 !important;
+    height: auto !important;
+  }
+
+  .comments {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+}

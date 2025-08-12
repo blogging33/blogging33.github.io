@@ -151,3 +151,27 @@ input[type=text]{padding:10px;border-radius:8px;border:1px solid rgba(11,102,255
     overflow: visible !important;
   }
 }
+
+@media (max-width: 600px) {
+  .viewer {
+    min-height: auto !important;
+    height: auto !important;
+  }
+
+  /* Jeśli jest wpis (post-full) to content i komentarze rosną swobodnie */
+  .viewer .post-full .content-scroll,
+  .viewer .post-full .comments {
+    max-height: none !important;
+    overflow: visible !important;
+    height: auto !important;
+    padding-right: 0 !important;
+  }
+
+  /* Jeśli nie ma wpisu (np. .empty), to daj minimalną wysokość */
+  .viewer > .empty {
+    min-height: 50vh; /* możesz dostosować */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

@@ -101,3 +101,96 @@
 
     /* little polish */
     .muted{color:var(--muted)}
+
+    /* dodatkowa poprawa responsywności dla telefonów */
+@media (max-width: 600px) {
+  body {
+    padding: 16px;
+  }
+
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .controls {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .controls .btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 16px;
+    padding: 12px;
+  }
+
+  .search input {
+    width: 100%;
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .sidebar {
+    max-height: none;
+    padding: 12px;
+  }
+
+  .post-item {
+    padding: 10px;
+  }
+
+  .viewer {
+    min-height: auto;
+    padding: 14px;
+  }
+
+  .viewer-inner {
+    padding: 0;
+  }
+
+  .content-scroll {
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  input, textarea, button {
+    font-size: 16px;
+  }
+
+  footer {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .socials {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .socials a {
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+/* bardzo małe ekrany, np. 360px szerokości */
+@media (max-width: 400px) {
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  p.lead {
+    font-size: 0.9rem;
+  }
+
+  .controls .btn {
+    font-size: 14px;
+    padding: 10px;
+  }
+}

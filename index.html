@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Blog</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.1.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="slide-in delay-1">
+      <div class="brand">
+        <div class="logo"><i class="ri-file-paper-line" style="font-size:22px"></i></div>
+        <div>
+          <h1>Mój blog</h1>
+          <p class="lead">Mój pierwszy, poważny blog</p>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="addBtn" class="btn"><i class="ri-add-line"></i> Dodaj wpis</button>
+        <button id="clearBtn" class="btn secondary" title="Usuń wszystko">Wyczyść</button>
+      </div>
+    </header>
+
+    <main>
+      <aside class="sidebar slide-in delay-2">
+        <div class="search">
+          <input id="search" placeholder="Szukaj w tytułach...">
+        </div>
+        <div class="post-list" id="postList"></div>
+      </aside>
+
+      <section class="viewer slide-in delay-3">
+        <div id="viewerInner" class="viewer-inner">
+          <div class="empty" id="emptyHint">Kliknij wpis po lewej, lub stwórz nowy, by go przeczytać.</div>
+        </div>
+
+        <footer>
+          <div class="muted">Masz pomysł? Dodaj wpis!</div>
+          <div class="socials">
+            <a href="https://www.instagram.com/cskubixer/" id="ig"><i class="ri-instagram-line"></i> Instagram</a>
+            <a href="https://www.youtube.com/@cskubixer" id="yt"><i class="ri-youtube-line"></i> YouTube</a>
+            <a href="https://www.x.com/cskubixer" id="tw"><i class="ri-twitter-line"></i> Twitter</a>
+          </div>
+        </footer>
+      </section>
+    </main>
+  </div>
+
+  <template id="modalT">
+    <div class="modal-backdrop">
+      <div class="modal slide-in">
+        <h3 id="modalTitle">Nowy wpis</h3>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+          <input id="postTitle" type="text" placeholder="Tytuł" />
+          <textarea id="postContent" placeholder="Treść wpisu..."></textarea>
+          <div style="display:flex;justify-content:flex-end;gap:8px">
+            <button id="cancel" class="btn secondary">Anuluj</button>
+            <button id="save" class="btn">Zapisz wpis</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </template>
+
+  <script>
+    const STORAGE_KEY = 'blue_blog_posts_v1';
+    let posts = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    const postListEl = document.getElementById('postList');
+    const viewerInner = document.getElementById('viewerInner');
+    const addBtn = document.getElementById('addBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const searchEl = document.getElementById('search');
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+    }
+
+    function timeNow() {
+      return new Date().toLocaleString('pl-PL');
+    }
+
+    function renderList(filter = '') {
+      postListEl.innerHTML = '';
+      const filtered = posts.filter(p => p.title.toLowerCase().includes(filter.toLowerCase()));
+      if (filtered.length === 0) {
+        postListEl.innerHTML = '<div class="muted">Brak wpisów</div>';
+        return;
+      }
+      filtered.forEach((p, i) => {
+        const div = document.createElement('div');
+        div.className = 'post-item';
+        div.innerHTML = `<div class="post-title">${escapeHtml(p.title)}</div><div class="post-meta">${p.date} • ${p.comments?.length || 0} komentarzy</div>`;
+        div.addEventListener('click', () => openPost(i));
+        postListEl.appendChild(div);
+      });
+    }
+
+    function escapeHtml(str) {
+      return str.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+    }
+
+    function openPost(index) {
+      const p = posts[index];
+      if (!p) return;
+      viewerInner.innerHTML = `
+        <div class="post-full">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <h2 style="margin:0">${escapeHtml(p.title)}</h2>
+              <div class="muted" style="font-size:13px">${p.date}</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn secondary" id="delPost"><i class="ri-delete-bin-line"></i></button>
+            </div>
+          </div>
+          <div class="content-scroll">${p.content.replaceAll('\n', '<br>')}</div>
+          <div class="comments">
+            <h4 style="margin:0 0 8px 0">Komentarze (${p.comments?.length || 0})</h4>
+            <div id="commentsWrap"></div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <input id="cName" placeholder="Imię" style="flex:0 0 160px" />
+              <input id="cText" placeholder="Twój komentarz..." />
+              <button id="addComment" class="btn">Dodaj</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const commentsWrap = document.getElementById('commentsWrap');
+      function renderComments() {
+        commentsWrap.innerHTML = '';
+        (p.comments || []).forEach(c => {
+          const div = document.createElement('div');
+          div.className = 'comment';
+          div.innerHTML = `<strong>${escapeHtml(c.name || 'Anonim')}</strong> <small>${c.date}</small><div style="margin-top:6px">${escapeHtml(c.text)}</div>`;
+          commentsWrap.appendChild(div);
+        });
+      }
+      renderComments();
+
+      document.getElementById('addComment').onclick = () => {
+        const name = document.getElementById('cName').value.trim() || 'Anonim';
+        const text = document.getElementById('cText').value.trim();
+        if (!text) return alert('Wpisz komentarz');
+        p.comments = p.comments || [];
+        p.comments.push({ name, text, date: timeNow() });
+        saveState();
+        renderComments();
+        renderList(searchEl.value);
+        document.getElementById('cText').value = '';
+      };
+
+      document.getElementById('delPost').onclick = () => {
+        if (confirm('Czy na pewno chcesz usunąć ten wpis?')) {
+          posts.splice(index, 1);
+          saveState();
+          renderList(searchEl.value);
+          viewerInner.innerHTML = '<div class="empty">Wpis usunięty. Wybierz inny lub dodaj nowy.</div>';
+        }
+      };
+    }
+
+    function showNewPostModal(prefillTitle = '', prefillContent = '') {
+      const tpl = document.getElementById('modalT');
+      const node = tpl.content.cloneNode(true);
+      document.body.appendChild(node);
+      const backdrop = document.querySelector('.modal-backdrop:last-of-type');
+      const cancel = backdrop.querySelector('#cancel');
+      const save = backdrop.querySelector('#save');
+      const titleIn = backdrop.querySelector('#postTitle');
+      const contentIn = backdrop.querySelector('#postContent');
+      titleIn.value = prefillTitle;
+      contentIn.value = prefillContent;
+      cancel.onclick = () => backdrop.remove();
+      save.onclick = () => {
+        const t = titleIn.value.trim() || 'Bez tytułu';
+        const c = contentIn.value.trim() || '';
+        const newPost = { title: t, content: c, date: timeNow(), comments: [] };
+        posts.unshift(newPost);
+        saveState();
+        renderList(searchEl.value);
+        backdrop.remove();
+        openPost(0);
+      };
+    }
+
+    addBtn.addEventListener('click', () => showNewPostModal());
+    clearBtn.addEventListener('click', () => {
+      if (confirm('Czy na pewno usunąć wszystkie wpisy?')) {
+        posts = [];
+        saveState();
+        renderList();
+        viewerInner.innerHTML = '<div class="empty">Brak wpisów. Dodaj nowy.</div>';
+      }
+    });
+
+    searchEl.addEventListener('input', () => renderList(searchEl.value));
+
+    renderList();
+
+    if (posts.length === 0) {
+      posts.push({
+        title: 'Witaj na blogu!',
+        content: 'To jest przykładowy wpis. Kliknij "Dodaj wpis" by napisać własny.\n\nMożesz także dodawać komentarze pod każdym wpisem.',
+        date: timeNow(),
+        comments: [{ name: 'Admin', text: 'Miłego pisania!', date: timeNow() }]
+      });
+      saveState();
+      renderList();
+    }
+  </script>
+</body>
+</html>

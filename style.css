@@ -124,3 +124,30 @@ input[type=text]{padding:10px;border-radius:8px;border:1px solid rgba(11,102,255
     overflow: visible !important;
   }
 }
+
+@media (max-width: 600px) {
+  .viewer {
+    min-height: auto !important;
+    height: auto !important;
+  }
+
+  .content-scroll {
+    max-height: none !important;
+    overflow: visible !important;
+    height: auto !important;
+    padding-right: 0 !important;
+  }
+
+  .comments {
+    max-height: none !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+}

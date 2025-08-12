@@ -210,6 +210,78 @@
       saveState();
       renderList();
     }
+
+    function openPost(index) {
+  const p = posts[index];
+  if (!p) return;
+  viewerInner.innerHTML = `
+    <div class="post-full">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h2 style="margin:0">${escapeHtml(p.title)}</h2>
+          <div class="muted" style="font-size:13px">${p.date}</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn secondary" id="closePost" title="Zamknij wpis">
+            <i class="ri-close-line"></i>
+          </button>
+          <button class="btn secondary" id="delPost" title="Usuń wpis">
+            <i class="ri-delete-bin-line"></i>
+          </button>
+        </div>
+      </div>
+      <div class="content-scroll">${p.content.replaceAll('\n', '<br>')}</div>
+      <div class="comments">
+        <h4 style="margin:0 0 8px 0">Komentarze (${p.comments?.length || 0})</h4>
+        <div id="commentsWrap"></div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input id="cName" placeholder="Imię" style="flex:0 0 160px" />
+          <input id="cText" placeholder="Twój komentarz..." />
+          <button id="addComment" class="btn">Dodaj</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const commentsWrap = document.getElementById('commentsWrap');
+  function renderComments() {
+    commentsWrap.innerHTML = '';
+    (p.comments || []).forEach(c => {
+      const div = document.createElement('div');
+      div.className = 'comment';
+      div.innerHTML = `<strong>${escapeHtml(c.name || 'Anonim')}</strong> <small>${c.date}</small><div style="margin-top:6px">${escapeHtml(c.text)}</div>`;
+      commentsWrap.appendChild(div);
+    });
+  }
+  renderComments();
+
+  document.getElementById('addComment').onclick = () => {
+    const name = document.getElementById('cName').value.trim() || 'Anonim';
+    const text = document.getElementById('cText').value.trim();
+    if (!text) return alert('Wpisz komentarz');
+    p.comments = p.comments || [];
+    p.comments.push({ name, text, date: timeNow() });
+    saveState();
+    renderComments();
+    renderList(searchEl.value);
+    document.getElementById('cText').value = '';
+  };
+
+  document.getElementById('delPost').onclick = () => {
+    if (confirm('Czy na pewno chcesz usunąć ten wpis?')) {
+      posts.splice(index, 1);
+      saveState();
+      renderList(searchEl.value);
+      viewerInner.innerHTML = '<div class="empty">Wpis usunięty. Wybierz inny lub dodaj nowy.</div>';
+    }
+  };
+
+  // Nowy przycisk zamykania wpisu
+  document.getElementById('closePost').onclick = () => {
+    viewerInner.innerHTML = '<div class="empty">Kliknij wpis po lewej, lub stwórz nowy, by go przeczytać.</div>';
+  };
+}
+
   </script>
 </body>
 </html>

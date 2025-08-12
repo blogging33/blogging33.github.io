@@ -152,10 +152,22 @@
     padding: 0;
   }
 
+  /* Wpis i komentarze w pełnej wysokości */
   .content-scroll {
-    max-height: none;
-    overflow: visible;
+    max-height: none !important;
+    overflow: visible !important;
     padding-right: 0;
+  }
+
+  .comments {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(11,102,255,0.1);
+  }
+
+  .comment {
+    font-size: 14px;
+    word-wrap: break-word;
   }
 
   input, textarea, button {
